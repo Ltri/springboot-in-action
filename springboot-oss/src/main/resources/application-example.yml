@@ -1,0 +1,13 @@
+aliyun:
+  oss:
+    endpoint:
+    accessKeyId:
+    accessKeySecret:
+    bucketName:
+    URLPrefix:
+
+spring:
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
