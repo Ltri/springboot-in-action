@@ -1,5 +1,6 @@
 package com.ltri.redis.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Service
+@Slf4j
 public class LockService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -137,29 +139,34 @@ public class LockService {
      * 实现方式：redis分布式锁方式，借助redisson。底层lua脚本实现原子性，内部通过调用一个定时任务 watchdog 每隔10s检查锁情况，定时更新锁时间，其余锁并发进入自旋
      * 问题：redis集群方式，主从同步时master宕机，主从切换 slave成为master后锁还没同步情况会存在锁丢失（概率小）
      */
-    public String lock5() {
+    public String lock5() throws InterruptedException {
         RLock lock = redissonClient.getLock(LOCK_KEY);
-        try {
-            lock.lock();
-            //加锁
-            System.out.println("start lock");
-            //查询库存
-            Integer stock = Optional.ofNullable((Integer) redisTemplate.opsForValue().get("stock")).orElse(0);
-            if (stock <= 0) {
-                System.out.println("库存不足");
-                return "库存不足";
+        //尝试获取锁 1秒后获取不了返回false，期间等待
+        boolean isLocked = lock.tryLock(1, TimeUnit.SECONDS);
+        if (isLocked) {
+            try {
+                //加锁
+                System.out.println("start lock");
+                //查询库存
+                Integer stock = Optional.ofNullable((Integer) redisTemplate.opsForValue().get("stock")).orElse(0);
+                if (stock <= 0) {
+                    System.out.println("库存不足");
+                    return "库存不足";
+                }
+                //模拟业务
+                Thread.sleep(2000);
+                //库存减少
+                Long realStock = redisTemplate.opsForValue().decrement("stock");
+                System.out.println("销售成功，当前库存剩余" + realStock);
+                return "销售成功，当前库存剩余" + realStock;
+            } finally {
+                System.out.println("end lock");
+                lock.unlock();
             }
-            //模拟业务
-            Thread.sleep(100);
-            //库存减少
-            Long realStock = redisTemplate.opsForValue().decrement("stock");
-            System.out.println("销售成功，当前库存剩余" + realStock);
-            return "销售成功，当前库存剩余" + stock;
-        } catch (InterruptedException e) {
-            return "网络繁忙，请稍后重试";
-        } finally {
-            System.out.println("end lock");
-            lock.unlock();
+        } else {
+            log.error("锁超时，直接返回");
+            System.out.println("锁超时，直接返回");
+            return "锁超时,网络繁忙，请稍后重试";
         }
     }
 }

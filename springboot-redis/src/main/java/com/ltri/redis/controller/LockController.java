@@ -7,10 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>
- * 前端控制器
- * </p>
- *
  * @author ltri
  * @since 2020-03-28
  */
@@ -40,7 +36,7 @@ public class LockController {
     }
 
     @PostMapping("/lock5")
-    public Object lock5() {
+    public Object lock5() throws InterruptedException {
         return lockService.lock5();
     }
 }
