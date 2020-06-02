@@ -2,7 +2,7 @@ package com.ltri.elasticsearch.service.impl;
 
 import com.ltri.elasticsearch.entity.Book;
 import com.ltri.elasticsearch.mapper.BookMapper;
-import com.ltri.elasticsearch.service.IBookService;
+import com.ltri.elasticsearch.service.BookService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2020-04-17
  */
 @Service
-public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IBookService {
+public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements BookService {
 
 }

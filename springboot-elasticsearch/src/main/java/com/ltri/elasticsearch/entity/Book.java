@@ -2,11 +2,12 @@ package com.ltri.elasticsearch.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -22,26 +23,31 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Document(indexName = "idx_book", type = "book")
+@Document(indexName = "book_v1", type = "_doc", shards = 5, replicas = 1)
 public class Book implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
+    @Field(type = FieldType.Long)
     private Long id;
 
+    @Field(type = FieldType.Keyword)
     private String title;
 
+    @Field(type = FieldType.Keyword)
     private String authors;
 
+    @Field(type = FieldType.Text, analyzer = "ik_smart")
     private String summary;
 
+    @Field(type = FieldType.Long)
     private Long reviews;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Field(type = FieldType.Date)
     private Date releaseTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Field(type = FieldType.Date)
     private Date createTime;
 
 

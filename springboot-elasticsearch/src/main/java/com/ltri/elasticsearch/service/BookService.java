@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author ltri
  * @since 2020-04-17
  */
-public interface IBookService extends IService<Book> {
+public interface BookService extends IService<Book> {
 
 }
