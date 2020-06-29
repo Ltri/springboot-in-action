@@ -11,6 +11,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,13 +45,14 @@ public class RocketMQController {
     @GetMapping("/syncSend")
     @ApiOperation("同步发送")
     public void sendSync() {
-        long time1 = System.currentTimeMillis();
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         for (int i = 0; i < 200; i++) {
             String msg = "syncSendMsg NO:" + i;
             rocketMQTemplate.syncSend("sync-topic", msg);
         }
-        long time2 = System.currentTimeMillis();
-        System.out.println("耗费时间 " + (time2 - time1) + "ms");
+        stopWatch.stop();
+        System.out.println("耗费时间 " + stopWatch.getLastTaskTimeMillis());
     }
 
     @GetMapping("/asyncSend")
@@ -92,7 +94,7 @@ public class RocketMQController {
 
     @GetMapping("/delaySend")
     @ApiOperation("延时消息发送")
-    public void asyncSendDelay(){
+    public void asyncSendDelay() {
         for (int i = 0; i < 10; i++) {
             String msg = "delay-msg NO:" + i + LocalDateTime.now().toString();
             Message<String> message = MessageBuilder.withPayload(msg).build();
