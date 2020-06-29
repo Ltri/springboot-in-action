@@ -27,6 +27,7 @@
         <module>springboot-jwt</module>
         <module>springboot-util</module>
         <module>springboot-rocketmq</module>
+        <module>springboot-zookeeper</module>
     </modules>
 
     <dependencies>
