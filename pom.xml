@@ -28,6 +28,7 @@
         <module>springboot-util</module>
         <module>springboot-rocketmq</module>
         <module>springboot-zookeeper</module>
+        <module>springboot-rabbitmq</module>
     </modules>
 
     <dependencies>
